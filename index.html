@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>NPR 5081:1998 - Liftberekening woongebouwen V17</title>
+<title>NPR 5081:1998 - Liftberekening woongebouwen V18</title>
 <style>
   body { font-family: Arial, sans-serif; max-width: 1000px; margin: 30px auto; padding: 0 20px; color: #222; line-height:1.4;}
   h1 { font-size: 1.5em; }
@@ -87,7 +87,7 @@
 </div>
 
 <div id="appContent" style="display:none;">
-  <h1>NPR 5081:1998 &ndash; Liftberekening woongebouwen <span style="font-size:0.4em; color:#888; font-weight:400;">V17</span></h1>
+  <h1>NPR 5081:1998 &ndash; Liftberekening woongebouwen <span style="font-size:0.4em; color:#888; font-weight:400;">V18</span></h1>
   <p class="subtitel">Bepaal het aantal, type en de snelheid van personenliften op basis van de rekenmethode uit NPR 5081:1998 (Berekening van de vervoercapaciteit en wachttijd). Toont niet alleen de goedkoopste oplossing, maar <strong>alle geldige alternatieven</strong> &mdash; inclusief gemengde liftgroepen (bijv. 630&nbsp;kg + 1000&nbsp;kg) en hogere snelheden.</p>
 
   <form id="invoerForm">
@@ -592,7 +592,7 @@ function bouwLijnKaart(s, input, eis, C5, laatsteLijn) {
           <span class="norm-badge ${p5Marge > 5 ? 'norm-ok' : 'norm-marge'}">${p5Marge > 0 ? 'Voldoet, marge +' + p5Marge + '%' : 'Kritisch'}</span>
         </div>
         <div class="marge-balk-wrap"><div class="marge-balk-fill" style="width:${marginBar(s.P5, C5, true)}%;"></div></div>
-        <div class="marge-labels"><span>0</span><span>Norm-minimum: ${C5}</span></div>
+        <div class="marge-labels" style="justify-content:flex-end;"><span>Norm-minimum: ${C5}</span></div>
       </div>
     </div>
 
@@ -655,7 +655,7 @@ function genereerRapport() {
 
     ${kaarten}
 
-    <div class="rapport-footer no-print">
+    <div class="rapport-footer">
       <span>Dit advies is indicatief en gebaseerd op de rekenmethode van NPR 5081:1998. Definitieve uitvoering te bevestigen door liftleverancier.</span>
       <span>Rapport gegenereerd op ${datum}</span>
     </div>

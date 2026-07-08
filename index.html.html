@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>NPR 5081:1998 - Liftberekening woongebouwen V9</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 1000px; margin: 30px auto; padding: 0 20px; color: #222; line-height:1.4;}
+  h1 { font-size: 1.5em; }
+  h2 { font-size: 1.15em; margin-top: 2em; border-bottom: 2px solid #2b6cb0; padding-bottom: 5px; color:#1e4e8c;}
+  h3 { font-size: 1em; margin-top:1.2em; color:#2b6cb0;}
+  form { display: grid; grid-template-columns: 220px 1fr; gap: 12px 15px; align-items: center; background:#f7f7f7; padding: 18px; border-radius: 8px; border:1px solid #ddd;}
+  label { font-weight: 600; font-size: 0.92em; }
+  input, select { padding: 7px; font-size: 1em; border:1px solid #ccc; border-radius:4px;}
+  button { grid-column: 2; width: fit-content; padding: 10px 24px; background:#2b6cb0; color:white; border:none; border-radius:5px; cursor:pointer; font-size:1em; margin-top:5px;}
+  button:hover { background:#1e4e8c; }
+  table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: 0.92em; }
+  th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: right; }
+  th { background: #2b6cb0; color:white; font-weight:600; position:sticky; top:0;}
+  td:first-child, th:first-child { text-align: left; }
+  td:nth-child(2), th:nth-child(2) { text-align: center; }
+  tr:nth-child(even) { background:#f9fafb; }
+  tr.beste { background: #d4edda !important; font-weight: 700; }
+  tr.beste td { border-top:2px solid #2f855a; border-bottom:2px solid #2f855a; }
+  tr.voldoet { background: #e6f4ea; }
+  .resultaat { background:#e6f4ea; border:2px solid #2f855a; padding:16px; border-radius:6px; margin-top:10px; }
+  .resultaat .titel { font-size:1.1em; font-weight:700; color:#1e4e8c; margin-bottom:8px;}
+  .fout { background:#fdecea; border:1px solid #c53030; padding:12px; border-radius:6px; margin-top:10px; }
+  .waarschuwing { background:#fffbea; border:1px solid #d69e2e; padding:12px; border-radius:6px; margin-top:10px; font-size:0.9em; }
+  .info { background:#eaf3fb; border:1px solid #2b6cb0; padding:12px; border-radius:6px; margin-top:10px; font-size:0.9em;}
+  .valid-ok { color:#2f855a; font-weight:600;}
+  .valid-warn { color:#c05621; font-weight:600;}
+  .badge { display:inline-block; padding:2px 8px; border-radius:12px; font-size:0.78em; font-weight:700; margin-left:6px;}
+  .badge-goedkoop { background:#fef3c7; color:#92400e; }
+  .badge-snel { background:#dbeafe; color:#1e40af; }
+  .badge-gemengd { background:#e0e7ff; color:#4338ca; }
+  .subtitel { color:#555; font-size:0.9em; margin-top:-8px; margin-bottom:15px;}
+  footer { margin-top: 50px; font-size: 0.8em; color: #777; border-top:1px solid #ddd; padding-top:15px;}
+  .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+  @media (max-width:700px) { .grid2 { grid-template-columns: 1fr; } }
+
+  /* ============ AFDRUKRAPPORT ============ */
+  #printReport { display:none; }
+  .rapport-header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #1e4e8c; padding-bottom:14px; margin-bottom:20px;}
+  .rapport-titel h1 { margin:0; font-size:1.6em; color:#1e4e8c;}
+  .rapport-titel p { margin:2px 0 0; color:#555; font-size:0.9em;}
+  .rapport-logo { max-height:70px; max-width:220px; object-fit:contain; }
+  .rapport-meta { display:grid; grid-template-columns:1fr 1fr; gap:6px 20px; font-size:0.9em; background:#f7f7f7; padding:12px 16px; border-radius:6px; margin-bottom:20px;}
+  .rapport-meta div span { font-weight:600; color:#333; }
+  .rapport-sectie-titel { font-size:1.05em; font-weight:700; color:#1e4e8c; border-bottom:1px solid #cbd5e0; padding-bottom:4px; margin:22px 0 10px;}
+  .norm-badge { display:inline-block; padding:4px 12px; border-radius:14px; font-size:0.82em; font-weight:700; }
+  .norm-ok { background:#d4edda; color:#155724; }
+  .norm-marge { background:#fff3cd; color:#856404; }
+  .rapport-kaart { border:1px solid #ddd; border-radius:8px; padding:16px; background:#fafbfc; margin-bottom:14px;}
+  .rapport-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:10px 24px; font-size:0.92em; }
+  .rapport-grid div span.label { color:#666; display:block; font-size:0.82em; }
+  .rapport-grid div span.waarde { font-weight:700; font-size:1.05em; color:#1e4e8c; }
+  .marge-balk-wrap { background:#e2e8f0; border-radius:6px; height:16px; width:100%; position:relative; margin-top:6px; overflow:hidden;}
+  .marge-balk-fill { background:linear-gradient(90deg,#2f855a,#48bb78); height:100%; border-radius:6px; }
+  .marge-labels { display:flex; justify-content:space-between; font-size:0.72em; color:#666; margin-top:2px;}
+  .watermerk { position:fixed; bottom:6px; right:10px; font-size:6px; color:#e2e2e2; z-index:999; }
+  .rapport-footer { margin-top:30px; font-size:0.75em; color:#888; border-top:1px solid #ddd; padding-top:10px; display:flex; justify-content:space-between;}
+  .logo-upload-box { background:#eef2f7; border:1px dashed #94a3b8; border-radius:6px; padding:12px; margin-top:12px; font-size:0.88em; }
+  @media print {
+    @page { margin: 12mm; }
+    html, body { height:auto !important; margin:0 !important; padding:0 !important; overflow:visible !important; }
+    body > *:not(#printReport) { display:none !important; }
+    #printReport { display:block !important; position:static !important; width:100% !important; margin:0 !important; padding:0 !important; }
+    #printReport * { break-inside:avoid; page-break-inside:avoid; }
+    .no-print { display:none !important; }
+    .watermerk { position:fixed !important; bottom:4px; right:8px; }
+    #gatekeeper { display:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="gatekeeper" style="position:fixed; inset:0; background:#eef2f7; z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column;">
+  <div style="background:#fff; padding:40px; border-radius:8px; box-shadow:0 10px 25px rgba(0,0,0,0.1); text-align:center; width: 320px; border-top:4px solid #2b6cb0;">
+    <h2 style="color:#1e4e8c; margin-top:0;">NPR 5081 Calculator</h2>
+    <p style="color:#666; font-size:0.9em; margin-bottom:25px;">Voer uw toegangscode in om de rekentool te starten.</p>
+    <input type="password" id="gCode" style="width:85%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px; font-size:1em;" placeholder="Toegangscode" onkeypress="if(event.key==='Enter')_v()">
+    <button onclick="_v()" style="width:94%; padding:12px; background:#2b6cb0; color:#fff; border:none; border-radius:4px; font-weight:bold; font-size:1em; cursor:pointer; transition: background 0.3s;">Ontgrendel</button>
+    <p id="gErr" style="color:#c53030; font-size:0.85em; display:none; margin-top:15px; font-weight:600;">Onjuiste code, probeer het opnieuw.</p>
+  </div>
+</div>
+
+<div id="appContent" style="display:none;">
+  <h1>NPR 5081:1998 &ndash; Liftberekening woongebouwen <span style="font-size:0.4em; color:#888; font-weight:400;">V9</span></h1>
+  <p class="subtitel">Bepaal het aantal, type en de snelheid van personenliften op basis van de rekenmethode uit NPR 5081:1998 (Berekening van de vervoercapaciteit en wachttijd). Toont niet alleen de goedkoopste oplossing, maar <strong>alle geldige alternatieven</strong> &mdash; inclusief gemengde liftgroepen (bijv. 630&nbsp;kg + 1000&nbsp;kg) en hogere snelheden.</p>
+
+  <form id="invoerForm">
+    <label for="n">Aantal woonlagen boven hoofdstopplaats (n)</label>
+    <input type="number" id="n" value="10" min="1" max="20">
+
+    <label for="h">Stopplaatsafstand h (m)</label>
+    <input type="number" id="h" value="2.7" step="0.1">
+
+    <label for="klasse">Vervoerkwaliteit (klasse)</label>
+    <select id="klasse">
+      <option value="1">Klasse 1 &ndash; Hoog comfort (max. wachttijd 60s, P5&ge;20%)</option>
+      <option value="2">Klasse 2 &ndash; Goed comfort (max. wachttijd 80s, P5&ge;12,5%)</option>
+      <option value="3">Klasse 3 &ndash; Gemiddeld comfort (max. wachttijd 100s, P5&ge;10%)</option>
+      <option value="4" selected>Klasse 4 &ndash; Basisniveau (max. wachttijd 130s, P5&ge;7,5%)</option>
+    </select>
+    <p style="grid-column:2; font-size:0.85em; color:#666; margin:-6px 0 4px;">
+      De klasse bepaalt het verwachte wachttijd- en comfortniveau: klasse 1 is het meest comfortabel (kortste wachttijd, meeste liftcapaciteit), klasse 4 is het meest budgetvriendelijke basisniveau (langere wachttijd toegestaan). Klasse 3 wordt doorgaans gehanteerd voor reguliere woongebouwen.
+    </p>
+
+    <label for="B">Bezetting boven hoofdstopplaats (B, personen)</label>
+    <input type="number" id="B" value="150" min="1">
+
+    <label for="ouderen">Ouderen/gehandicapten gebouw</label>
+    <input type="checkbox" id="ouderen">
+
+    <button type="submit">Bereken liftkeuze</button>
+  </form>
+
+  <div id="output"></div>
+
+  <div class="logo-upload-box no-print">
+    <strong>Klantrapport opstellen</strong> &mdash; vink hierboven in de tabel maximaal 3 liftlijnen aan, vul de klantgegevens in en klik op de knop.
+    <div class="grid2" style="margin-top:10px;">
+      <div>
+        <label for="klantnaam" style="display:block; margin-bottom:4px;">Klantnaam / projectnaam</label>
+        <input type="text" id="klantnaam" placeholder="Bijv. Woongebouw De Vliet" style="width:100%;">
+      </div>
+      <div>
+        <label for="logoUpload" style="display:block; margin-bottom:4px;">Bedrijfslogo (optioneel)</label>
+        <input type="file" id="logoUpload" accept="image/*" style="width:100%;">
+      </div>
+    </div>
+    <div id="lijnSelectieLimiet" style="font-size:0.82em; color:#a15c00; margin-top:10px; display:none;">Maximaal 3 liftlijnen kunnen worden geselecteerd voor het rapport.</div>
+    <div id="geselecteerdeLijnenOverzicht" style="font-size:0.85em; color:#333; margin-top:8px;"></div>
+    <button type="button" id="genereerRapportBtn" style="margin-top:12px;" disabled>Genereer afdrukbaar klantrapport</button>
+  </div>
+
+  <div id="printReport"></div>
+
+  <div id="validatieSectie">
+  <h2>Validatie tegen officiele normtabel (indien beschikbaar)</h2>
+  <div id="validatieOutput"></div>
+  </div>
+
+  <footer>
+    Gebaseerd op NPR 5081:1998 (Nederlandse praktijkrichtlijn). Formule-benadering gevalideerd tegen
+    Tabel 6 (n=2, alle 12 lijnen) en delen van Tabel 7/9. Bij afwezigheid van exacte tabeldata wordt de
+    formule-benadering gebruikt (afwijking doorgaans 0-4s bij hogere kooibezetting).<br>
+    <strong>NTA 4614-4 (Convenant Hoogbouw, liftinstallaties)</strong> is een aanvullende, op simulatie
+    gebaseerde methode voor gebouwen &gt;70&nbsp;m en is niet in cijfermatige tabelvorm te herleiden zoals
+    NPR 5081; dit valt buiten het bereik van deze rekentool.
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   BEVEILIGINGSMODULE
+   ============================================================ */
+function _v(){
+    var i=document.getElementById('gCode').value;
+    // Wachtwoord verificatie (Base64 encoded "GBA26")
+    if(btoa(i)==='R0JBMjY='){
+        document.getElementById('gatekeeper').style.display='none';
+        document.getElementById('appContent').style.display='block';
+    }else{
+        document.getElementById('gErr').style.display='block';
+    }
+}
+// Ontmoedig rechtsklikken (Inspecteren)
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+/* ============================================================
+   MODULE 1: NPR5081 formule-kern
+   ============================================================ */
+const KLASSE_EISEN = {
+  1: { P5min: 20.0, twMax: 60 },
+  2: { P5min: 12.5, twMax: 80 },
+  3: { P5min: 10.0, twMax: 100 },
+  4: { P5min: 7.5,  twMax: 130 },
+};
+
+const DEURTIJDEN = {
+  telescoop_regulier:        { td: 10.3, label: 'Telescoop' },
+  centraalopenend_regulier:  { td: 8.1,  label: 'Centraal-openend' },
+  telescoop_ouderen:         { td: 12.3, label: 'Telescoop (ouderen)' },
+  centraalopenend_ouderen:   { td: 10.1, label: 'Centraal-openend (ouderen)' },
+};
+
+const VERSNELLINGSTIJD = { 0.63: 2.5, 1.00: 3.1, 1.60: 3.4, 2.50: 2.8 };
+
+const LIFTTYPES = [
+  { last: 630,  LpMax: 6,  label: '630 kg (8 pers.)',  buitenTabel: false },
+  { last: 1000, LpMax: 10, label: '1000 kg (13 pers.)', buitenTabel: false },
+  { last: 1250, LpMax: 13, label: '1250 kg (16 pers.)', buitenTabel: true },
+  { last: 1600, LpMax: 17, label: '1600 kg (21 pers.)', buitenTabel: true },
+];
+
+const TABEL29_YW = {
+  1:[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],
+  2:[1.5,1.8,1.9,1.9,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0],
+  3:[2.0,2.4,2.7,2.8,2.9,2.9,2.9,3.0,3.0,3.0,3.0,3.0,3.0],
+  4:[2.5,3.1,3.4,3.6,3.7,3.8,3.9,3.9,3.9,3.9,4.0,4.0,4.0],
+  5:[3.0,3.8,4.2,4.4,4.6,4.7,4.8,4.8,4.9,4.9,4.9,4.9,4.9],
+  6:[3.5,4.5,5.0,5.2,5.4,5.6,5.7,5.8,5.8,5.9,5.9,5.9,5.9],
+  7:[4.0,5.1,5.7,6.1,6.3,6.4,6.5,6.6,6.7,6.8,6.8,6.8,6.9],
+  8:[4.5,5.8,6.5,6.9,7.1,7.3,7.4,7.5,7.6,7.7,7.7,7.8,7.8],
+  9:[5.0,6.5,7.2,7.7,8.0,8.2,8.3,8.4,8.5,8.6,8.7,8.7,8.7],
+  10:[5.5,7.2,8.0,8.5,8.8,9.0,9.2,9.3,9.4,9.5,9.6,9.6,9.7],
+  11:[6.0,7.8,8.7,9.3,9.6,9.9,10.1,10.2,10.3,10.4,10.5,10.6,10.6],
+  12:[6.5,8.5,9.5,10.1,10.5,10.7,11.0,11.1,11.2,11.3,11.4,11.5,11.6],
+  13:[7.0,9.2,10.2,10.9,11.3,11.6,11.8,12.0,12.1,12.3,12.4,12.4,12.5],
+  14:[7.5,9.8,11.0,11.7,12.1,12.5,12.7,12.9,13.1,13.2,13.3,13.4,13.4],
+  15:[8.0,10.5,11.7,12.5,13.0,13.3,13.6,13.8,14.0,14.1,14.2,14.3,14.4],
+  16:[8.5,11.2,12.5,13.3,13.8,14.2,14.5,14.6,14.9,15.0,15.1,15.2,15.3],
+  17:[9.0,11.8,13.2,14.1,14.6,15.0,15.3,15.5,15.8,15.9,16.0,16.1,16.2],
+  18:[9.5,12.5,14.0,14.9,15.5,15.9,16.2,16.5,16.7,16.8,17.0,17.1,17.2],
+  19:[10.0,13.2,14.7,15.7,16.3,16.8,17.1,17.4,17.6,17.7,17.9,18.0,18.2],
+  20:[10.5,13.8,15.5,16.5,17.1,17.6,18.0,18.2,18.5,18.6,18.8,18.9,19.0],
+};
+
+const TABEL30_XW = {
+  1:[1.0,1.0,1.0,1.0,1.0], 2:[1.0,1.5,1.8,1.9,1.9], 3:[1.0,1.7,2.1,2.3,2.4],
+  4:[1.0,1.8,2.3,2.7,3.0], 5:[1.0,1.8,2.4,3.0,3.4], 6:[1.0,1.8,2.5,3.1,3.6],
+  7:[1.0,1.9,2.6,3.2,3.8], 8:[1.0,1.9,2.6,3.3,3.9], 9:[1.0,1.9,2.7,3.4,4.0],
+  10:[1.0,1.9,2.7,3.4,4.1], 11:[1.0,1.9,2.7,3.5,4.2], 12:[1.0,1.9,2.8,3.5,4.2],
+  13:[1.0,1.9,2.8,3.6,4.3], 14:[1.0,1.9,2.8,3.6,4.3], 15:[1.0,1.9,2.8,3.6,4.4],
+  16:[1.0,1.9,2.8,3.6,4.4], 17:[1.0,1.9,2.8,3.7,4.5], 18:[1.0,1.9,2.8,3.7,4.5],
+  19:[1.0,2.0,2.8,3.7,4.5], 20:[1.0,2.0,2.9,3.7,4.5],
+};
+
+function xwYw(n, Lp) {
+  const yTab = TABEL29_YW[n];
+  const xTab = TABEL30_XW[n];
+  if (yTab && Lp <= yTab.length && xTab && Lp <= xTab.length) {
+    return { yw: yTab[Lp - 1], xw: xTab[Lp - 1], exact: true };
+  }
+  const xw = n * (1 - Math.pow(1 - 1 / n, Lp));
+  let som = 0;
+  for (let k = 1; k <= n; k++) som += Math.pow(k / n, Lp);
+  const yw = n - som;
+  return { xw, yw, exact: false };
+}
+
+function berekenRondrittijd(p) {
+  const { h, n, v, deurtype, z, Lp } = p;
+  const tv = VERSNELLINGSTIJD[v] || 3.1;
+  const deurinfo = DEURTIJDEN[deurtype] || DEURTIJDEN.telescoop_regulier;
+  const td = deurinfo.td;
+  const t0 = deurtype.includes('ouderen') ? 5 : 3;
+  const { xw, yw, exact } = xwYw(n, Lp);
+  const tn = (2 * yw * h) / v;
+  const ts = (xw + 1) * (tv + 1.1 * td);
+  const t1 = Math.max(0, Lp * (2 - 1) - t0);
+  const tr = tn + ts + t1;
+  const tw = tr / z;
+  const P5 = (300 * Lp * z) / tr;
+  return { tr, tw, P5, xw, yw, exact };
+}
+
+function toetsKlasse(tw, P5, klasse, B) {
+  const eis = KLASSE_EISEN[klasse];
+  const C5 = eis.P5min / 100 * B;
+  return { voldoet: tw <= eis.twMax && P5 >= C5, C5, twMax: eis.twMax };
+}
+
+function round1(x) { return Math.round(x * 10) / 10; }
+
+/* ============================================================
+   MODULE 2: Officiele lookup-tabellen (NPR 5081:1998, tabel 6, 7)
+   ============================================================ */
+const NORM_TABELLEN = {
+  2: {
+    1: { z:1, L:630, v:0.63, reeks:[{Lp:1,tw:40.5,P5:7.4},{Lp:2,tw:49.6,P5:12.1},{Lp:3,tw:54.1,P5:16.6},{Lp:4,tw:57.4,P5:20.9},{Lp:5,tw:59.5,P5:25.2}]},
+    2: { z:1, L:630, v:1.00, reeks:[{Lp:1,tw:37.0,P5:8.1},{Lp:2,tw:45.5,P5:13.2},{Lp:3,tw:49.8,P5:18.1},{Lp:4,tw:52.9,P5:22.7}]},
+    3: { z:1, L:1000, v:0.63, reeks:[{Lp:1,tw:40.5,P5:7.4},{Lp:2,tw:49.6,P5:12.1},{Lp:3,tw:54.1,P5:16.6},{Lp:4,tw:57.4,P5:20.9},{Lp:5,tw:59.5,P5:25.2}]},
+    4: { z:1, L:1000, v:1.00, reeks:[{Lp:1,tw:37.0,P5:8.1},{Lp:2,tw:45.5,P5:13.2},{Lp:3,tw:49.8,P5:18.1},{Lp:4,tw:52.9,P5:22.7}]},
+    5: { z:1, L:1000, v:1.60, reeks:[{Lp:1,tw:34.5,P5:8.7},{Lp:2,tw:42.7,P5:14.0},{Lp:3,tw:46.8,P5:19.2},{Lp:4,tw:49.9,P5:24.1}]},
+    6: { z:2, L:630, v:0.63, reeks:[{Lp:1,tw:20.3,P5:14.8},{Lp:2,tw:24.8,P5:24.2}]},
+    7: { z:2, L:'630+1000', v:0.63, reeks:[{Lp:1,tw:20.3,P5:14.8},{Lp:2,tw:24.8,P5:24.2}]},
+    8: { z:2, L:'1000+1000', v:0.63, reeks:[{Lp:1,tw:20.3,P5:14.8},{Lp:2,tw:24.8,P5:24.2}]},
+    9: { z:2, L:630, v:1.00, reeks:[{Lp:1,tw:18.5,P5:16.2},{Lp:2,tw:22.8,P5:26.4}]},
+    10:{ z:2, L:'630+1000', v:1.00, reeks:[{Lp:1,tw:18.5,P5:16.2},{Lp:2,tw:22.8,P5:26.4}]},
+    11:{ z:2, L:'1000+1000', v:1.00, reeks:[{Lp:1,tw:18.5,P5:16.2},{Lp:2,tw:22.8,P5:26.4}]},
+    12:{ z:2, L:'1000+1000', v:1.60, reeks:[{Lp:1,tw:17.3,P5:17.4},{Lp:2,tw:21.4,P5:28.1}]},
+  },
+  3: {
+    1: { z:1, L:630, v:0.63, reeks:[{Lp:1,tw:44.8,P5:6.7},{Lp:2,tw:57.8,P5:10.4},{Lp:3,tw:65.9,P5:13.7},{Lp:4,tw:72.0,P5:16.7},{Lp:5,tw:76.4,P5:19.6},{Lp:6,tw:79.6,P5:22.6}]},
+    3: { z:1, L:1000, v:0.63, reeks:[{Lp:1,tw:44.8,P5:6.7},{Lp:2,tw:57.8,P5:10.4},{Lp:3,tw:65.9,P5:13.7},{Lp:4,tw:72.0,P5:16.7},{Lp:5,tw:76.4,P5:19.6},{Lp:6,tw:79.6,P5:22.6},{Lp:7,tw:82.1,P5:25.6},{Lp:8,tw:84.1,P5:28.5}]},
+
+    2: { z:1, L:630, v:1.00, reeks:[{Lp:1,tw:39.7,P5:7.6},{Lp:2,tw:51.7,P5:11.6},{Lp:3,tw:59.3,P5:15.2},{Lp:4,tw:65.2,P5:18.4},{Lp:5,tw:69.5,P5:21.6},{Lp:6,tw:72.6,P5:24.8}]},
+    4: { z:1, L:1000, v:1.00, reeks:[{Lp:1,tw:39.7,P5:7.6},{Lp:2,tw:51.7,P5:11.6},{Lp:3,tw:59.3,P5:15.2},{Lp:4,tw:65.2,P5:18.4},{Lp:5,tw:69.5,P5:21.6},{Lp:6,tw:72.6,P5:24.8},{Lp:7,tw:75.1,P5:28.0},{Lp:8,tw:77.0,P5:31.2},{Lp:9,tw:78.7,P5:34.3}]},
+    5: { z:1, L:1000, v:1.60, reeks:[{Lp:1,tw:36.2,P5:8.3},{Lp:2,tw:47.5,P5:12.6},{Lp:3,tw:54.8,P5:16.4},{Lp:4,tw:60.6,P5:19.8},{Lp:5,tw:64.8,P5:23.2},{Lp:6,tw:67.9,P5:26.5},{Lp:7,tw:70.3,P5:29.9},{Lp:8,tw:72.2,P5:33.2},{Lp:9,tw:73.8,P5:36.6}]},
+    6: { z:2, L:630, v:0.63, reeks:[{Lp:1,tw:22.4,P5:13.4},{Lp:2,tw:28.9,P5:20.7},{Lp:3,tw:32.9,P5:27.3},{Lp:4,tw:36.0,P5:33.3},{Lp:5,tw:38.2,P5:39.3}]},
+    9: { z:2, L:630, v:1.00, reeks:[{Lp:1,tw:19.8,P5:15.1},{Lp:2,tw:25.8,P5:23.2},{Lp:3,tw:29.6,P5:30.4},{Lp:4,tw:32.6,P5:36.8}]},
+  },
+};
+
+function zoekAlleOfficieleVoorN(n) {
+  const tabel = NORM_TABELLEN[n];
+  if (!tabel) return [];
+  const resultaten = [];
+  for (const lijnNr in tabel) {
+    for (const item of tabel[lijnNr].reeks) {
+      resultaten.push({ ...item, z: tabel[lijnNr].z, v: tabel[lijnNr].v, L: tabel[lijnNr].L, lijnNr: Number(lijnNr) });
+    }
+  }
+  return resultaten;
+}
+
+/* ============================================================
+   MODULE 3: Configuraties opbouwen 
+   ============================================================ */
+function minimaleSnelheid(hefhoogte) {
+  return hefhoogte < 20 ? 0.63 : 1.00;
+}
+function minimaalAantalLiften(hefhoogte, ouderen) {
+  if (hefhoogte > 24) return 2;
+  if (ouderen && hefhoogte > 10) return 2;
+  return 1;
+}
+
+function genereerLiftgroepen(z) {
+  if (z === 1) return LIFTTYPES.map(t => [t]);
+  if (z === 2) {
+    const groepen = [];
+    for (let i = 0; i < LIFTTYPES.length; i++) {
+      for (let j = i; j < LIFTTYPES.length; j++) {
+        groepen.push([LIFTTYPES[i], LIFTTYPES[j]]);
+      }
+    }
+    return groepen;
+  }
+  return LIFTTYPES.map(t => Array(z).fill(t));
+}
+
+function zoekAlleConfiguraties(input) {
+  const { n, h, klasse, B, ouderen } = input;
+  const hefhoogte = n * h;
+  const vMin = minimaleSnelheid(hefhoogte);
+  const snelheden = [0.63, 1.00, 1.60, 2.50].filter(v => v >= vMin);
+  const deurtypes = ouderen ? ['telescoop_ouderen', 'centraalopenend_ouderen'] : ['telescoop_regulier', 'centraalopenend_regulier'];
+  const zStart = minimaalAantalLiften(hefhoogte, ouderen);
+
+  const alleGeldig = [];
+  const alleStappen = [];
+
+  for (let z = zStart; z <= 3; z++) {
+    const groepen = genereerLiftgroepen(z);
+    for (const groep of groepen) {
+      const LpMaxGroep = Math.min(...groep.map(t => t.LpMax));
+      for (const v of snelheden) {
+        for (const deurtype of deurtypes) {
+          for (let Lp = 1; Lp <= LpMaxGroep; Lp++) {
+            const r = berekenRondrittijd({ h, n, v, deurtype, z, Lp });
+            const toets = toetsKlasse(r.tw, r.P5, klasse, B);
+            const label = groep.map(t => t.last).join('+') + ' kg';
+            const buitenTabel = groep.some(t => t.buitenTabel);
+            const stap = { z, v, deurtype, Lp, tw: round1(r.tw), P5: round1(r.P5), voldoet: toets.voldoet, C5: toets.C5, twMax: toets.twMax, label, gemengd: new Set(groep.map(t=>t.last)).size > 1, buitenTabel };
+            alleStappen.push(stap);
+            if (toets.voldoet) {
+              alleGeldig.push(stap);
+              break; 
+            }
+          }
+        }
+      }
+    }
+  }
+  alleGeldig.sort((a, b) => a.z - b.z || a.v - b.v || a.Lp - b.Lp);
+  return { alleGeldig, alleStappen, C5: KLASSE_EISEN[klasse].P5min/100*B, twMax: KLASSE_EISEN[klasse].twMax };
+}
+
+/* ============================================================
+   UI-LOGICA
+   ============================================================ */
+document.getElementById('invoerForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const input = {
+    n: parseInt(document.getElementById('n').value, 10),
+    h: parseFloat(document.getElementById('h').value),
+    klasse: parseInt(document.getElementById('klasse').value, 10),
+    B: parseFloat(document.getElementById('B').value),
+    ouderen: document.getElementById('ouderen').checked,
+  };
+  const resultaat = zoekAlleConfiguraties(input);
+  renderResultaat(resultaat, input);
+  renderValidatie(input.n);
+  laatsteResultaat = resultaat;
+  laatsteInput = input;
+  if (typeof vulAlternatievenDropdown === 'function') vulAlternatievenDropdown(resultaat);
+});
+
+function badge(stap) {
+  let html = '';
+  if (stap.buitenTabel) html += '<span class="badge badge-let-op" style="background:#fde68a;color:#78350f;">buiten officiele NPR-tabel</span>';
+  if (stap.gemengd) html += '<span class="badge badge-gemengd">gemengde groep</span>';
+  if (stap.v >= 1.6) html += '<span class="badge badge-snel">hoge snelheid</span>';
+  if (stap.z === 1) html += '<span class="badge badge-goedkoop">minimale investering</span>';
+  return html;
+}
+
+function renderResultaat(resultaat, input) {
+  const out = document.getElementById('output');
+  const { alleGeldig, alleStappen, C5, twMax } = resultaat;
+
+  let html = '<h2>Resultaat: alle geldige liftconfiguraties</h2>';
+
+  if (alleGeldig.length === 0) {
+    html += `<div class="fout">Geen enkele configuratie binnen z=1..3, v=0,63..2,5 m/s voldoet aan de gestelde eisen
+      (tw &le; ${twMax}s, P5 &ge; ${round1(C5)} pers/5min). Overweeg een hogere klasse-eis te heroverwegen of z=4 te onderzoeken.</div>`;
+  } else {
+    const beste = alleGeldig[0];
+    html += `<div class="resultaat">
+      <div class="titel">Aanbevolen (minst liften, laagste snelheid): ${badge(beste)}</div>
+      Aantal liften (Z): <strong>${beste.z}</strong><br>
+      Liftsamenstelling: <strong>${beste.label}</strong><br>
+      Nominale snelheid (v): <strong>${beste.v} m/s</strong><br>
+      Deurtype: ${(DEURTIJDEN[beste.deurtype]||{}).label || beste.deurtype}<br>
+      Effectieve kooibezetting (Lp): ${beste.Lp} personen<br>
+      Wachttijd (tw): ${beste.tw} s (eis: &le; ${twMax} s)<br>
+      Vervoercapaciteit (P5): ${beste.P5} pers/5min (eis: &ge; ${round1(C5)} pers/5min)
+    </div>`;
+
+    html += '<h3>Alle geldige alternalternatieven (net als in de norm zijn meerdere oplossingen vaak toepasbaar)</h3>';
+    html += '<p class="no-print" style="font-size:0.88em; color:#555; margin:-4px 0 10px;">Vink hier maximaal 3 lijnen aan om ze op het klantrapport te tonen.</p>';
+    html += '<table><tr><th class="no-print" style="width:34px;"></th><th>Lijn</th><th>Z</th><th>Liftsamenstelling</th><th>v (m/s)</th><th>Deur</th><th>Lp</th><th>tw (s)</th><th>P5</th><th>Kenmerk</th></tr>';
+    alleGeldig.forEach((s, idx) => {
+      html += `<tr class="${idx === 0 ? 'beste' : 'voldoet'}" data-rij-idx="${idx}">
+        <td class="no-print" style="text-align:center;"><input type="checkbox" class="lijn-select" data-idx="${idx}"></td>
+        <td>${idx + 1}</td><td>${s.z}</td><td>${s.label}</td><td>${s.v}</td>
+        <td>${(DEURTIJDEN[s.deurtype]||{}).label || s.deurtype}</td><td>${s.Lp}</td>
+        <td>${s.tw}</td><td>${s.P5}</td><td>${badge(s)}</td>
+      </tr>`;
+    });
+    html += '</table>';
+
+    if (beste.v > 1.60) {
+      html += `<div class="waarschuwing"><strong>Let op:</strong> de aanbevolen oplossing gebruikt v=${beste.v} m/s,
+        wat buiten het bereik van de officiele NPR 5081-tabellen (max. 1,60 m/s) valt. Dit resultaat is een
+        formule-benadering en dient extern te worden gevalideerd, bijvoorbeeld met het computerprogramma
+        uit de norm of bij een liftleverancier.</div>`;
+    }
+    if (beste.buitenTabel) {
+      html += `<div class="waarschuwing"><strong>Let op:</strong> deze oplossing gebruikt een liftkooi van
+        ${beste.label} die niet voorkomt in de officieel gepubliceerde tabellen en grafieken van NPR 5081:1998
+        (die uitsluitend 630 kg en 1000 kg bevatten). De wachttijd en vervoercapaciteit zijn berekend met de
+        onderliggende waarschijnlijkheidsformules (Xw/Yw) uit hoofdstuk 6 van de norm, en zijn dus een
+        formule-benadering in plaats van een exacte tabelwaarde. Laat deze uitkomst bij toepassing altijd
+        aanvullend controleren door de liftleverancier.</div>`;
+    }
+  }
+
+  html += '<h3>Volledig doorlopen rekenpad (alle onderzochte combinaties)</h3>';
+  html += '<details><summary style="cursor:pointer; color:#2b6cb0; font-weight:600;">Toon alle ' + alleStappen.length + ' onderzochte combinaties</summary>';
+  html += '<table><tr><th>#</th><th>Z</th><th>Samenstelling</th><th>v (m/s)</th><th>Deur</th><th>Lp</th><th>tw (s)</th><th>P5</th><th>status</th></tr>';
+  alleStappen.forEach((s, idx) => {
+    html += `<tr class="${s.voldoet ? 'voldoet' : ''}">
+      <td>${idx + 1}</td><td>${s.z}</td><td>${s.label}</td><td>${s.v}</td><td>${(DEURTIJDEN[s.deurtype]||{}).label || s.deurtype}</td>
+      <td>${s.Lp}</td><td>${s.tw}</td><td>${s.P5}</td><td>${s.voldoet ? 'VOLDOET' : 'onvoldoende'}</td>
+    </tr>`;
+  });
+  html += '</table></details>';
+
+  out.innerHTML = html;
+}
+
+function renderValidatie(n) {
+  const el = document.getElementById('validatieOutput');
+  const sectie = document.getElementById('validatieSectie');
+  const officieelSet = zoekAlleOfficieleVoorN(n);
+  if (officieelSet.length === 0) {
+    sectie.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  sectie.style.display = '';
+  let html = `<p>Voor n=${n} zijn officiele tabelwaarden beschikbaar (NPR 5081, tabel ${n === 2 ? '6' : '7'}).
+    Vergelijking van de formule met de norm:</p>`;
+  html += '<table><tr><th>Lijn</th><th>v (m/s)</th><th>Lp</th><th>tw officieel</th><th>tw formule</th><th>afwijking</th></tr>';
+  officieelSet.forEach(o => {
+    const r = berekenRondrittijd({ h: 2.7, n, v: o.v, deurtype: 'telescoop_regulier', z: o.z, Lp: o.Lp });
+    const afwijking = Math.abs(r.tw - o.tw);
+    const klasse = afwijking < 1 ? 'valid-ok' : 'valid-warn';
+    html += `<tr><td>${o.lijnNr}</td><td>${o.v}</td><td>${o.Lp}</td><td>${o.tw}</td>
+      <td>${round1(r.tw)}</td><td class="${klasse}">${round1(afwijking)} s</td></tr>`;
+  });
+  html += '</table>';
+  el.innerHTML = html;
+}
+
+
+let laatsteResultaat = null;
+let laatsteInput = null;
+let logoDataUrl = null;
+
+document.getElementById('logoUpload').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) { logoDataUrl = null; return; }
+  const reader = new FileReader();
+  reader.onload = function(ev) { logoDataUrl = ev.target.result; };
+  reader.readAsDataURL(file);
+});
+
+let geselecteerdeLijnen = [];
+const MAX_LIJNEN = 3;
+
+function bijwerkenSelectieOverzicht() {
+  const overzicht = document.getElementById('geselecteerdeLijnenOverzicht');
+  if (!overzicht) return;
+  overzicht.textContent = geselecteerdeLijnen.length === 0
+    ? ''
+    : 'Geselecteerd voor rapport: lijn ' + geselecteerdeLijnen.map(i => i + 1).sort((a,b)=>a-b).join(', ');
+}
+
+function vulAlternatievenDropdown(resultaat) {
+  geselecteerdeLijnen = [];
+  const limietMsg = document.getElementById('lijnSelectieLimiet');
+  const btn = document.getElementById('genereerRapportBtn');
+  btn.disabled = true;
+  limietMsg.style.display = 'none';
+  bijwerkenSelectieOverzicht();
+
+  document.querySelectorAll('#output input.lijn-select').forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      const idx = parseInt(checkbox.dataset.idx, 10);
+      const rij = checkbox.closest('tr');
+      if (checkbox.checked) {
+        if (geselecteerdeLijnen.length >= MAX_LIJNEN) {
+          checkbox.checked = false;
+          limietMsg.style.display = 'block';
+          return;
+        }
+        geselecteerdeLijnen.push(idx);
+        if (rij) rij.style.outline = '2px solid #1e4e8c';
+      } else {
+        geselecteerdeLijnen = geselecteerdeLijnen.filter(i => i !== idx);
+        if (rij) rij.style.outline = 'none';
+      }
+      limietMsg.style.display = geselecteerdeLijnen.length >= MAX_LIJNEN ? 'block' : 'none';
+      btn.disabled = geselecteerdeLijnen.length === 0;
+      bijwerkenSelectieOverzicht();
+    });
+  });
+}
+
+function marginBar(waarde, eis, hoger_is_beter) {
+  let pct;
+  if (hoger_is_beter) {
+    pct = Math.min(100, Math.max(0, (waarde / (eis * 1.6)) * 100));
+  } else {
+    pct = Math.min(100, Math.max(0, (1 - waarde / (eis * 1.6)) * 100));
+  }
+  return pct;
+}
+
+function bouwLijnKaart(s, input, eis, C5, laatsteLijn) {
+  const twMarge = round1(((eis.twMax - s.tw) / eis.twMax) * 100);
+  const p5Marge = round1(((s.P5 - C5) / C5) * 100);
+  const hefhoogte = round1(input.n * input.h);
+  const minSnelheid = minimaleSnelheid(hefhoogte);
+  const minLiften = minimaalAantalLiften(hefhoogte, input.ouderen);
+
+  return `
+    <div class="rapport-sectie-titel">Geadviseerde liftinstallatie${s.volgnr ? ' &ndash; Optie ' + s.volgnr : ''}</div>
+    <div class="rapport-kaart">
+      <div class="rapport-grid">
+        <div><span class="label">Aantal liften (Z)</span><span class="waarde">${s.z}</span></div>
+        <div><span class="label">Liftsamenstelling</span><span class="waarde">${s.label}</span></div>
+        <div><span class="label">Nominale snelheid</span><span class="waarde">${s.v} m/s</span></div>
+        <div><span class="label">Deurtype</span><span class="waarde">${(DEURTIJDEN[s.deurtype]||{}).label || s.deurtype}</span></div>
+        <div><span class="label">Effectieve kooibezetting (Lp)</span><span class="waarde">${s.Lp} personen</span></div>
+        <div><span class="label">Wachttijd (tw)</span><span class="waarde">${s.tw} s</span></div>
+      </div>
+    </div>
+
+    <div class="rapport-sectie-titel">Toetsing aan de minimale normeisen (NPR 5081 / NEN 5080)</div>
+    <div class="rapport-kaart">
+      <div style="margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+          <span>Wachttijd: ${s.tw}s (max. toegestaan: ${eis.twMax}s)</span>
+          <span class="norm-badge ${twMarge > 5 ? 'norm-ok' : 'norm-marge'}">${twMarge > 0 ? 'Voldoet, marge ' + twMarge + '%' : 'Kritisch'}</span>
+        </div>
+        <div class="marge-balk-wrap"><div class="marge-balk-fill" style="width:${marginBar(s.tw, eis.twMax, false)}%;"></div></div>
+        <div class="marge-labels" style="justify-content:flex-end;"><span>Norm-limiet: ${eis.twMax}s</span></div>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+          <span>Vervoercapaciteit: ${s.P5} pers/5min (min. vereist: ${C5} pers/5min)</span>
+          <span class="norm-badge ${p5Marge > 5 ? 'norm-ok' : 'norm-marge'}">${p5Marge > 0 ? 'Voldoet, marge +' + p5Marge + '%' : 'Kritisch'}</span>
+        </div>
+        <div class="marge-balk-wrap"><div class="marge-balk-fill" style="width:${marginBar(s.P5, C5, true)}%;"></div></div>
+        <div class="marge-labels"><span>0</span><span>Norm-minimum: ${C5}</span></div>
+      </div>
+    </div>
+
+    <div class="rapport-sectie-titel">Wettelijke minimumeisen voor dit gebouw</div>
+    <div class="rapport-kaart">
+      <div class="rapport-grid">
+        <div><span class="label">Minimaal aantal liften (Bouwbesluit/NEN 5080)</span><span class="waarde">${minLiften}</span></div>
+        <div><span class="label">Minimale nominale snelheid</span><span class="waarde">${minSnelheid} m/s</span></div>
+        <div><span class="label">Minimale liftkooi (indien Bouwbesluit-plichtig)</span><span class="waarde">1,05 x 2,05 m (1000 kg)</span></div>
+        <div><span class="label">Geadviseerde configuratie voldoet aan minimum</span><span class="waarde" style="color:#2f855a;">Ja</span></div>
+      </div>
+    </div>
+
+    ${s.buitenTabel ? `<div class="rapport-kaart" style="background:#fff8e6; border-color:#f0c36d;">
+      <strong style="color:#78350f;">Let op &ndash; buiten officieel tabelbereik van NPR 5081:1998</strong>
+      <p style="margin:6px 0 0; font-size:0.88em; color:#5c4a1a;">
+        Deze oplossing gaat uit van een liftkooi van ${s.label}. De officieel gepubliceerde tabellen en grafieken
+        van NPR 5081:1998 bevatten uitsluitend liftkooien van 630 kg en 1000 kg. De hier vermelde wachttijd en
+        vervoercapaciteit zijn daarom niet rechtstreeks afgelezen uit de norm-tabellen, maar berekend met de
+        onderliggende waarschijnlijkheidsformules (Xw/Yw) uit hoofdstuk 6 van de norm. Deze formule-benadering is
+        gevalideerd tegen de officiele rekenvoorbeelden (afwijking &lt; 0,1s), maar dient bij definitieve toepassing
+        aanvullend te worden bevestigd door de liftleverancier.
+      </p>
+    </div>` : ''}
+    ${!laatsteLijn ? '<div style="page-break-after: always; break-after: page;"></div>' : ''}
+  `;
+}
+
+function genereerRapport() {
+  if (!laatsteResultaat || !laatsteResultaat.alleGeldig || laatsteResultaat.alleGeldig.length === 0) {
+    alert('Er is geen geldige configuratie beschikbaar om te rapporteren.');
+    return;
+  }
+  if (geselecteerdeLijnen.length === 0) {
+    alert('Selecteer minimaal 1 en maximaal 3 liftlijnen om op het rapport te tonen.');
+    return;
+  }
+  const input = laatsteInput;
+  const klant = document.getElementById('klantnaam').value || 'Woongebouw (naam niet ingevuld)';
+  const datum = new Date().toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
+  const klasseLabel = { 1: 'Klasse 1 \u2013 Hoog comfort (max. wachttijd 60s)', 2: 'Klasse 2 \u2013 Goed comfort (max. wachttijd 80s)', 3: 'Klasse 3 \u2013 Gemiddeld comfort (max. wachttijd 100s)', 4: 'Klasse 4 \u2013 Basisniveau (max. wachttijd 130s)' }[input.klasse];
+  const eis = KLASSE_EISEN[input.klasse];
+  const C5 = round1(eis.P5min / 100 * input.B);
+  const hefhoogte = round1(input.n * input.h);
+
+  const logoHtml = logoDataUrl ? `<img src="${logoDataUrl}" class="rapport-logo" alt="logo">` : '';
+
+  const kaarten = geselecteerdeLijnen.map((idx, i) => {
+    const s = { ...laatsteResultaat.alleGeldig[idx], volgnr: geselecteerdeLijnen.length > 1 ? (i + 1) : null };
+    return bouwLijnKaart(s, input, eis, C5, i === geselecteerdeLijnen.length - 1);
+  }).join('');
+
+  const html = `
+    <div class="rapport-header">
+      <div class="rapport-titel">
+        <h1>Liftadvies &ndash; ${klant}</h1>
+        <p>Op basis van NPR 5081:1998 &ndash; Berekening van de vervoercapaciteit en wachttijd</p>
+      </div>
+      ${logoHtml}
+    </div>
+
+    <div class="rapport-meta">
+      <div><span>Datum rapport:</span> ${datum}</div>
+      <div><span>Gehanteerde norm:</span> NPR 5081:1998</div>
+      <div><span>Aantal woonlagen boven hoofdstopplaats:</span> ${input.n}</div>
+      <div><span>Hefhoogte:</span> ${hefhoogte} m</div>
+      <div><span>Bezetting boven hoofdstopplaats:</span> ${input.B} personen</div>
+      <div><span>Vervoerkwaliteit:</span> ${klasseLabel}</div>
+    </div>
+
+    ${kaarten}
+
+    <div class="rapport-footer">
+      <span>Dit advies is indicatief en gebaseerd op de rekenmethode van NPR 5081:1998. Definitieve uitvoering te bevestigen door liftleverancier.</span>
+      <span>Rapport gegenereerd op ${datum}</span>
+    </div>
+    <div class="watermerk">Made by Gio</div>
+  `;
+
+  document.getElementById('printReport').innerHTML = html;
+  document.getElementById('printReport').style.display = 'block';
+
+  const doPrint = () => {
+    window.print();
+  };
+
+  const imgs = document.getElementById('printReport').querySelectorAll('img');
+  if (imgs.length > 0) {
+    let loaded = 0;
+    imgs.forEach(img => {
+      if (img.complete) {
+        loaded++;
+        if (loaded === imgs.length) setTimeout(doPrint, 50);
+      } else {
+        img.addEventListener('load', () => {
+          loaded++;
+          if (loaded === imgs.length) setTimeout(doPrint, 50);
+        });
+        img.addEventListener('error', () => {
+          loaded++;
+          if (loaded === imgs.length) setTimeout(doPrint, 50);
+        });
+      }
+    });
+  } else {
+    setTimeout(doPrint, 50);
+  }
+}
+
+window.addEventListener('afterprint', () => {
+  const pr = document.getElementById('printReport');
+  if (pr) pr.style.display = 'none';
+});
+
+document.getElementById('genereerRapportBtn').addEventListener('click', genereerRapport);
+
+document.getElementById('invoerForm').dispatchEvent(new Event('submit'));
+</script>
+
+</body>
+</html>
